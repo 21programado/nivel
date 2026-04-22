@@ -1,4 +1,4 @@
-const CACHE = "nivel-v1";
+const CACHE = "nivel-v2";
 
 self.addEventListener("install", e => {
   e.waitUntil(
