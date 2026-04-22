@@ -75,3 +75,13 @@ h1{
   font-size:18px;
   color:#ccc;
 }
+
+#startBtn{
+  margin-top:20px;
+  padding:12px 20px;
+  background:#00aa44;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+}
