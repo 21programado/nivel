@@ -2,6 +2,7 @@ const bubble = document.getElementById("bubble");
 const statusText = document.getElementById("status");
 
 function moveBubble(beta, gamma){
+
   const maxMove = 95;
 
   let x = gamma * 3;
@@ -13,41 +14,45 @@ function moveBubble(beta, gamma){
   bubble.style.left = `calc(50% + ${x}px)`;
   bubble.style.top  = `calc(50% + ${y}px)`;
 
+  statusText.textContent =
+    `β:${beta.toFixed(1)}° γ:${gamma.toFixed(1)}°`;
+
   if(Math.abs(beta) < 2 && Math.abs(gamma) < 2){
-    statusText.textContent = "NIVELADO";
     statusText.style.color = "#00ff66";
-  }else{
-    statusText.textContent = `${beta.toFixed(1)}° / ${gamma.toFixed(1)}°`;
-    statusText.style.color = "#ccc";
+  } else {
+    statusText.style.color = "#ffffff";
   }
 }
 
-function initSensors(){
-  if (typeof DeviceOrientationEvent !== "undefined") {
+function startSensor(){
+  window.addEventListener("deviceorientation", e => {
+    moveBubble(e.beta || 0, e.gamma || 0);
+  });
+}
 
-    if (typeof DeviceOrientationEvent.requestPermission === "function") {
-      DeviceOrientationEvent.requestPermission()
-      .then(permissionState => {
-        if (permissionState === "granted") {
-          window.addEventListener("deviceorientation", e => {
-            moveBubble(e.beta || 0, e.gamma || 0);
-          });
+function init(){
+
+  if (typeof DeviceOrientationEvent === "undefined") {
+    statusText.textContent = "Sensor no disponible";
+    return;
+  }
+
+  if (typeof DeviceOrientationEvent.requestPermission === "function") {
+    DeviceOrientationEvent.requestPermission()
+      .then(state => {
+        if(state === "granted"){
+          startSensor();
         } else {
           statusText.textContent = "Permiso denegado";
         }
-      });
-    } else {
-      window.addEventListener("deviceorientation", e => {
-        moveBubble(e.beta || 0, e.gamma || 0);
-      });
-    }
-
+      })
+      .catch(() => startSensor());
   } else {
-    statusText.textContent = "Sensor no disponible";
+    startSensor();
   }
 }
 
-initSensors();
+init();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
